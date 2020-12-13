@@ -24,7 +24,7 @@ class game():
         self.background_color=[255,255,255] #white background color
         self.grid_color=[169,169,169] #grid lines color
 
-        self.board = [[1,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0]] #Saves the information about all squares on the board
+        self.board = [[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0]] #Saves the information about all squares on the board
         self.current_piece = None
 
         self.running=True #Variable for the main game loop
@@ -71,20 +71,24 @@ class game():
             for j in range(10):
                 pygame.draw.rect(self.window, self.grid_color, pygame.Rect(j*self.square_side, i*self.square_side, self.square_side, self.square_side), 1)
 
+
     def draw_board(self):
         self.window.fill(self.background_color)
-        print(self.board)
+
+        piecetest = piece(5,0)
+        piecetest.place(self.board)
         i=self.square_side
         for k in self.board:
             j=0
             for l in k:
                 if(l==1):
-                    pygame.draw.rect(self.window, [0,0,0], pygame.Rect(j*self.square_side, i*self.square_side, self.square_side, self.square_side))
+                    pygame.draw.rect(self.window, [0,255,0], pygame.Rect(j, i, self.square_side, self.square_side))
                 j=j+self.square_side
             i=i+self.square_side
 
         self.draw_grid()
         pygame.display.update() #update the display
+        piecetest.remove(self.board)
 
 
 

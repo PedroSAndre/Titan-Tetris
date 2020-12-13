@@ -16,6 +16,7 @@ tetris.start()
 
 while tetris.running:
     tetris.draw_board()
+    pygame.time.wait(1000)
     for event in pygame.event.get():
         #If the user wants to exit
         if event.type == pygame.QUIT:

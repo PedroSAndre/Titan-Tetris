@@ -3,7 +3,7 @@ import random as rand
 
 class piece():
     def __init__(self,x,y):
-        self.piece=rand.randint(0,6) #generates a random piece
+        self.piece=rand.randint(0,6)#generates a random piece
         self.rotation=0
         self.x=x
         self.y=y
@@ -47,11 +47,11 @@ class piece():
 
     def place(self, matrix):
         self.refresh()
-        matrix[self.x][self.y]=1
+        matrix[self.y][self.x]=1
         for i in self.relatives:
-            matrix[i[0]+self.x][i[1]+self.y]=1
+            matrix[i[1]+self.y][i[0]+self.x]=1
 
     def remove(self,matrix):
-        matrix[self.x][self.y]=0
+        matrix[self.y][self.x]=0
         for i in self.relatives:
-            matrix[i[0]+self.x][i[1]+self.y]=0
+            matrix[i[1]+self.y][i[0]+self.x]=0
