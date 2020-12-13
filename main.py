@@ -3,26 +3,26 @@
 import pygame
 
 #Import from other project scriptss
-from file_handling import config
+from game import game
 
 #Starting program procedures
-config = config()
-pygame.init()
-screen = pygame.display.set_mode([config.window_width, config.window_height])
+tetris = game()
 
-running = True
+#Reading config
+tetris.get_config()
 
-while running:
+#Starting pygame
+tetris.start_window()
 
-
-    # Did the user click the window close button?
-
+while tetris.running:
+    tetris.draw_grid()
+    pygame.display.flip() #update the display
     for event in pygame.event.get():
-
+        #If the user wants to exit
         if event.type == pygame.QUIT:
 
-            running = False
+            tetris.running = False
 
 
-
+del tetris
 pygame.quit()
