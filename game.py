@@ -1,6 +1,7 @@
 #Class with all the game variables to be used
 #The oficial board is 10x20, so this values cannot be changed
 import pygame
+from piece import piece
 
 class game():
     def __init__(self):
@@ -19,8 +20,12 @@ class game():
         self.square_side=None
         self.window_title='Titan Tetris'
         self.icon_path='sources/icon.png'
+        self.music='sources/TetrisTheme.mp3'
         self.background_color=[255,255,255] #white background color
         self.grid_color=[169,169,169] #grid lines color
+
+        self.board = [[1,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0]] #Saves the information about all squares on the board
+        self.current_piece = None
 
         self.running=True #Variable for the main game loop
 
@@ -44,20 +49,42 @@ class game():
                     exit(0)
 
     #Fuction to create the playing window
-    def start_window(self):
+    def start(self):
+        pygame.mixer.init()
+        pygame.mixer.music.load(self.music)
         pygame.init()
+
         self.square_side = int((self.window_width)/10)
         self.window_height = (21)*(self.square_side)
+
         self.window = pygame.display.set_mode([self.window_width, self.window_height])
         pygame.display.set_caption(self.window_title)
         pygame.display.set_icon(pygame.image.load(self.icon_path))
 
+        
+        pygame.mixer.music.play(-1)
+
+
     #Function to draw grid and update the score
     def draw_grid(self):
-        self.window.fill(self.background_color)
-        
         for i in range(1, 21):
             for j in range(10):
-                pygame.draw.rect(self.window, self.grid_color, pygame.Rect(j*self.square_side, i*self.square_side, self.square_side, self.square_side), 2)
+                pygame.draw.rect(self.window, self.grid_color, pygame.Rect(j*self.square_side, i*self.square_side, self.square_side, self.square_side), 1)
 
-        
+    def draw_board(self):
+        self.window.fill(self.background_color)
+        print(self.board)
+        i=self.square_side
+        for k in self.board:
+            j=0
+            for l in k:
+                if(l==1):
+                    pygame.draw.rect(self.window, [0,0,0], pygame.Rect(j*self.square_side, i*self.square_side, self.square_side, self.square_side))
+                j=j+self.square_side
+            i=i+self.square_side
+
+        self.draw_grid()
+        pygame.display.update() #update the display
+
+
+

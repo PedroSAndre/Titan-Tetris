@@ -12,15 +12,13 @@ tetris = game()
 tetris.get_config()
 
 #Starting pygame
-tetris.start_window()
+tetris.start()
 
 while tetris.running:
-    tetris.draw_grid()
-    pygame.display.flip() #update the display
+    tetris.draw_board()
     for event in pygame.event.get():
         #If the user wants to exit
         if event.type == pygame.QUIT:
-
             tetris.running = False
 
 
