@@ -12,4 +12,4 @@ Pieces move using the arrow keys. Rotate using the space key.
 * Pedro Silva André
 * José Alberto Cavaleiro Henriques
 
-**Disclaimer:** This code was created with educational purposes only. It will not be used in any commercial apllication whatsoever
+**Disclaimer:** This code was created with educational purposes only. It will not be used in any commercial application whatsoever
