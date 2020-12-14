@@ -1,4 +1,17 @@
-#Class to represent a piece on a board
+#####################################################piece.py############################################################
+##Encoding: UTF-8
+##End-of-Line Sequence: CRLF
+
+##Class to represent a piece on a board and all it's rotations and movements
+##Also, here all colisions are detected and handled
+
+##Authors:
+
+##Pedro Silva André
+##José Alberto Cavaleiro Henriques
+########################################################################################################################
+
+#Modules Import
 import random as rand
 
 class piece():
@@ -10,7 +23,7 @@ class piece():
         self.oldx=None
         self.oldy=None
         self.oldrotation=None
-        self.relatives = [[0,0],[0,0],[0,0]]
+        self.relatives = [[0,0],[0,0],[0,0]] #other squares of the piece
 
 
     #The pieces can be checked on infopiece.png on the sources folder
@@ -30,13 +43,14 @@ class piece():
         if(self.piece==6):
             self.relatives = [[-1,0],[0,1],[1,1]]
 
+    #Gets all the x of the piece
     def get_x(self):
         list1 = [self.x]
         for i in self.relatives:
             list1.append(i[0]+self.x)
 
         return list1
-
+    #Gets all the y from the piece
     def get_y(self):
         list1 = [self.y]
         for i in self.relatives:
@@ -44,6 +58,7 @@ class piece():
         
         return list1
 
+    #Rotates the piece
     def do_rotation(self):
         if(self.rotation == 1 or self.rotation == 3):
             for i in self.relatives:
@@ -57,19 +72,22 @@ class piece():
             for i in self.relatives:
                 i[1]=-i[1]
 
-
+    #Self-explanatory
     def refresh(self):
         self.neighbour()
         self.do_rotation()
 
+    #Puts a piece on the board
     def place(self, matrix):
         self.refresh()
         self.move_in_bounds()
-        self.check_colisions_with_pieces(matrix)
+        gameover = self.check_colisions_with_pieces(matrix)
         matrix[self.y][self.x]=1
         for i in self.relatives:
             matrix[i[1]+self.y][i[0]+self.x]=1
+        return gameover
 
+    #Removes the piece from the board
     def remove(self,matrix):
         self.oldx=self.x
         self.oldy=self.y #This is done so that the last position is never lost
@@ -78,20 +96,27 @@ class piece():
         for i in self.relatives:
             matrix[i[1]+self.y][i[0]+self.x]=0
 
+    #Makes sure the piece stays in bounds
     def move_in_bounds(self):
         self.change_coordinates_x()
         self.change_coordinates_y()
 
+    #Doesn't allow the piece to move if it collides with another already on the board
     def check_colisions_with_pieces(self, matrix):
         listx = self.get_x()
         listy = self.get_y()
+        gameover=False
         for i in range(4):
             if(matrix[listy[i]][listx[i]]==1):
-                self.x=self.oldx
-                self.y=self.oldy
-                self.rotation=self.oldrotation
-                self.refresh()
-                break
+                if(self.oldx == None and self.oldy == None and self.oldrotation == None):
+                    gameover = True
+                    return gameover
+                else:
+                    self.x=self.oldx
+                    self.y=self.oldy
+                    self.rotation=self.oldrotation
+                    self.refresh()
+                    return gameover
 
     def change_coordinates_x(self): #for some reason a general function for x and y didn't work
         done=False

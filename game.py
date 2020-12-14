@@ -1,8 +1,22 @@
-#Class with all the game variables to be used
-#The oficial board is 10x20, so this values cannot be changed
+#####################################################game.py############################################################
+##Encoding: UTF-8
+##End-of-Line Sequence: CRLF
+
+##Class with all the game variables and functions
+##The oficial board is 10x20, so this values cannot be changed
+
+##Authors:
+
+##Pedro Silva André
+##José Alberto Cavaleiro Henriques
+########################################################################################################################
+
+#Modules Import
 import pygame
+
+#Import from other project scripts
 from piece import piece
-from general_functions import check_pair_in_list
+from general_functions import check_pair_in_list, create_matrix
 
 class game():
     def __init__(self):
@@ -10,10 +24,10 @@ class game():
         self.level=1
         self.points=0 
         self.interval=1000 #Interval in seconds between drops
-        self.intervaldrop=0.95
+        self.intervaldrop=0.8
 
-        self.points_to_new_level=10000
-        self.points_per_line_cleared=1000
+        self.points_to_new_level=1000
+        self.points_per_line_cleared=200
 
         self.window=None #Needs to wait for window to be created in main loop
         self.window_width=None
@@ -24,14 +38,15 @@ class game():
         self.music='sources/TetrisTheme.mp3'
         self.background_color=[255,255,255] #white background color
         self.grid_color=[169,169,169] #grid lines color
+        self.squares_color=[255,0,0]
 
-        self.board = [[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0]] #Saves the information about all squares on the board
+        self.board = create_matrix()
         self.current_piece = None
         self.new_piece = True
 
         self.running=True #Variable for the main game loop
 
-    #Function to read or create the config file for the game (includes window height and width)
+    #Function to read or create the config file for the game (window width)
     def get_config(self):
         try:
             file = open('config.txt','r')
@@ -55,6 +70,7 @@ class game():
         pygame.mixer.init()
         pygame.mixer.music.load(self.music)
         pygame.init()
+        pygame.key.set_repeat(200,50) #Sets keys to repeat
 
         self.square_side = int((self.window_width)/10)
         self.window_height = (21)*(self.square_side)
@@ -73,7 +89,14 @@ class game():
             for j in range(10):
                 pygame.draw.rect(self.window, self.grid_color, pygame.Rect(j*self.square_side, i*self.square_side, self.square_side, self.square_side), 1)
 
+        font = pygame.font.SysFont(None, 30)
+        img = font.render('Level ' + str(self.level), True, [0,0,0])
+        self.window.blit(img, (0, 0))
+        img = font.render(str(self.points) + ' Points', True, [0,0,0])
+        self.window.blit(img, (self.square_side*4, 0))
 
+
+    #Fuction used to draw all of the elements in the board
     def draw_board(self):
         self.window.fill(self.background_color)
 
@@ -82,23 +105,26 @@ class game():
             j=0
             for l in k:
                 if(l==1):
-                    pygame.draw.rect(self.window, [0,255,0], pygame.Rect(j, i, self.square_side, self.square_side))
+                    pygame.draw.rect(self.window, self.squares_color, pygame.Rect(j, i, self.square_side, self.square_side))
                 j=j+self.square_side
             i=i+self.square_side
 
         self.draw_grid()
         pygame.display.update() #update the display
 
+    #Inserts a piece into the board
     def insert_piece(self):
         self.current_piece = piece(5,0)
-        self.current_piece.place(self.board)
+        self.running = not self.current_piece.place(self.board)
     
+    #Removes the piece, moves it and places it on the board
     def move_piece(self,x,y):
         self.current_piece.remove(self.board)
         self.current_piece.x+=x
         self.current_piece.y+=y
         self.current_piece.place(self.board)
 
+    #Rotates the piece
     def rotate_piece(self):
         self.current_piece.remove(self.board)
         if(self.current_piece.rotation!=3):
@@ -107,6 +133,7 @@ class game():
             self.current_piece.rotation=0
         self.current_piece.place(self.board)
 
+    #Fuction used to check if the play with the current piece is over; otherwise the piece goes down
     def move_down(self):
         i=self.current_piece.get_x()
         j=self.current_piece.get_y()
@@ -117,23 +144,49 @@ class game():
             else:
                 if(self.board[j[k]+1][i[k]]==1 and not check_pair_in_list(i,j,i[k],j[k]+1,4)):
                     self.new_piece=True
-                    if(j[k]==1 or j[k]==0 or j[k]==3):
+                    if(j[0]==0 or j[1]==0 or j[2]==0 or j[3]==0):
                         self.current_piece = None
                         self.running = False #Ends the game
 
         if not self.new_piece:
             self.move_piece(0,1)
 
+    #Updates the board and the score
     def update_score(self):
         l=0
         for i in self.board:
             if i == [1,1,1,1,1,1,1,1,1,1]:
-                self.points+=100
-                if(self.points % 1000 == 0):
+                self.points+=self.points_per_line_cleared
+                if(self.points % self.points_to_new_level == 0):
                     self.level += 1
-                    self.interval = self.interval*self.intervaldrop
-                    self.intervaldrop=self.intervaldrop*2
+                    self.interval = int(self.interval*self.intervaldrop)
                 for k in range(l):
                     self.board[l-k]=self.board[l-k-1]
-                self.board[0] = [0,0,0,0,0,0,0,0,0,0]  #Por alguma razão alterar isto lixa tudo, rever bem
-            l+=1         
+                self.board[0] = [0,0,0,0,0,0,0,0,0,0]  #Weird behaviour observed with a for loop, may be the causa of bugs that may appear
+            l+=1       
+
+
+    #Writes the results and ends pygame
+    def write_results(self):
+        pygame.quit()
+        lines = ['*****Results of the game by cronological order*****\n']
+        try:
+            file = open("results.txt", "r")
+            for i in file.readlines():
+                if(i!='*****Results of the game by cronological order*****\n'):
+                    lines.append(i)
+            file.close()
+        except IOError:
+            pass
+
+        name = input('Introduce your name: ')
+        lines.append(name + ': ' + str(self.points) + ' Points\n')
+
+        try:
+            file = open("results.txt","w")
+            for i in lines:
+                file.write(i)
+            file.close()
+        except IOError:
+            print('Error creating results file\nPlease verify that you have read and write permissions')
+
