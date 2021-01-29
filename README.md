@@ -10,6 +10,6 @@ Pieces move using the arrow keys. Rotate using the space key.
 
 ## Authors: 
 * Pedro Silva André
-* José Alberto Cavaleiro Henriques
+* José Alberto Cavaleiro Henriques (helped in the conceptual phase)
 
 **Disclaimer:** This code was created with educational purposes only. It will not be used in any commercial application whatsoever
